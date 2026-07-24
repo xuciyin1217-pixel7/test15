@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>大家來找碴</title>
+    <style>
+        /* 整體頁面與字體設定 */
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f0f2f5;
+            text-align: center;
+            margin: 0;
+            padding: 20px;
+            color: #333;
+        }
+
+        h1 {
+            margin-bottom: 10px;
+            color: #2c3e50;
+        }
+
+        /* 記分板與訊息區塊 UI */
+        .status-board {
+            background: white;
+            padding: 15px 30px;
+            border-radius: 30px;
+            display: inline-block;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            margin-bottom: 20px;
+        }
+
+        #score-text {
+            font-size: 22px;
+            font-weight: bold;
+            color: #34495e;
+        }
+
+        #score {
+            color: #e74c3c;
+            font-size: 28px;
+        }
+
+        #message {
+            font-size: 18px;
+            color: #27ae60;
+            font-weight: bold;
+            margin-top: 10px;
+            min-height: 27px;
+        }
+
+        /* 遊戲主要版面配置 */
+        .game-container {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        /* 圖片容器 */
+        .image-wrapper {
+            position: relative;
+            width: 50%;
+            max-width: 500px;
+            box-shadow: 0 8px 16px rgba(0,0,0,0.15);
+            border-radius: 12px;
+            overflow: hidden;
+            background-color: #fff;
+            user-select: none;
+        }
+
+        .image-wrapper img {
+            width: 100%;
+            display: block;
+            pointer-events: none;
+        }
+
+        /* 隱藏的點擊熱區 */
+        .hotspot {
+            position: absolute;
+            cursor: pointer;
+            z-index: 10;
+        }
+
+        /* 找到差異時的紅圈動畫與樣式 */
+        .hotspot.found {
+            border: 4px solid #ff4757;
+            border-radius: 50%;
+            box-sizing: border-box;
+            background-color: rgba(255, 71, 87, 0.15);
+            pointer-events: none;
+            animation: popIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+        }
+
+        @keyframes popIn {
+            0% { transform: scale(0.3); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        /* 響應式設計：小螢幕時改為上下排列 */
+        @media (max-width: 768px) {
+            .game-container {
+                flex-direction: column;
+                align-items: center;
+            }
+            .image-wrapper {
+                width: 90%;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <h1>大家來找碴</h1>
+    
+    <div class="status-board">
+        <div id="score-text">分數: <span id="score">0</span> / 6</div>
+        <div id="message">找出左右兩張圖的 6 個不同之處！</div>
+    </div>
+
+    <div class="game-container">
+        <!-- 左側原圖 (已更新為你的新檔名) -->
+        <div class="image-wrapper" id="img1-wrapper">
+            <img src="53160201_2129819147111015_6485212458737729536_n_2.jpg" alt="原圖">
+        </div>
+        
+        <!-- 右側找碴圖 (已更新為你的新檔名) -->
+        <div class="image-wrapper" id="img2-wrapper">
+            <img src="53160201_2129819147111015_6485212458737729536_n (1)_2.jpg" alt="找碴圖">
+        </div>
+    </div>
+
+    <script>
+        // 定義 6 個差異處的座標範圍
+        const differences = [
+            { id: 1, top: '10%', left: '8%', width: '25%', height: '16%' },  // 左上角便條紙
+            { id: 2, top: '11%', left: '53%', width: '37%', height: '18%' }, // 右上角鏡子文字
+            { id: 3, top: '44%', left: '40%', width: '12%', height: '10%' }, // 熊大的嘴巴
+            { id: 4, top: '56%', left: '45%', width: '22%', height: '10%' }, // 莎莉的睫毛
+            { id: 5, top: '83%', left: '4%', width: '26%', height: '12%' },  // 左下角髮飾
+            { id: 6, top: '90%', left: '75%', width: '22%', height: '8%' }   // 右下角版權文字
+        ];
+
+        let score = 0;
+        const totalDiffs = differences.length;
+        const found = new Set();
+
+        const img1Wrapper = document.getElementById('img1-wrapper');
+        const img2Wrapper = document.getElementById('img2-wrapper');
+        const scoreElement = document.getElementById('score');
+        const messageElement = document.getElementById('message');
+
+        function initGame() {
+            differences.forEach(diff => {
+                createHotspot(img1Wrapper, diff);
+                createHotspot(img2Wrapper, diff);
+            });
+        }
+
+        function createHotspot(container, diff) {
+            const spot = document.createElement('div');
+            spot.className = 'hotspot';
+            spot.style.top = diff.top;
+            spot.style.left = diff.left;
+            spot.style.width = diff.width;
+            spot.style.height = diff.height;
+            spot.dataset.id = diff.id;
+            
+            spot.onclick = (e) => {
+                e.stopPropagation();
+                handleFound(diff.id);
+            };
+            
+            container.appendChild(spot);
+        }
+
+        function handleFound(id) {
+            if (found.has(id)) return;
+            
+            found.add(id);
+            score++;
+            scoreElement.textContent = score;
+
+            const spots = document.querySelectorAll(`.hotspot[data-id="${id}"]`);
+            spots.forEach(spot => spot.classList.add('found'));
+
+            if (score === totalDiffs) {
+                messageElement.textContent = '🎉 恭喜你！找出了所有不同的地方！ 🎉';
+                messageElement.style.color = '#e74c3c';
+            }
+        }
+
+        window.onload = initGame;
+    </script>
+</body>
+</html>
