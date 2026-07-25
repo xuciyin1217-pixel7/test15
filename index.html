@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>大家來找碴</title>
+    <title>大家來找碴 (4個不同版)</title>
     <style>
         /* 整體頁面與字體設定 */
         body {
@@ -115,31 +115,29 @@
     <h1>大家來找碴</h1>
     
     <div class="status-board">
-        <div id="score-text">分數: <span id="score">0</span> / 6</div>
-        <div id="message">找出左右兩張圖的 6 個不同之處！</div>
+        <div id="score-text">分數: <span id="score">0</span> / 4</div>
+        <div id="message">找出左右兩張圖的 4 個不同之處！</div>
     </div>
 
     <div class="game-container">
-        <!-- 左側原圖 (已更新為你的新檔名) -->
+        <!-- 左側原圖 -->
         <div class="image-wrapper" id="img1-wrapper">
             <img src="53160201_2129819147111015_6485212458737729536_n_2.jpg" alt="原圖">
         </div>
         
-        <!-- 右側找碴圖 (已更新為你的新檔名) -->
+        <!-- 右側找碴圖 -->
         <div class="image-wrapper" id="img2-wrapper">
             <img src="53160201_2129819147111015_6485212458737729536_n (1)_2.jpg" alt="找碴圖">
         </div>
     </div>
 
     <script>
-        // 定義 6 個差異處的座標範圍
+        // 定義精確的 4 個差異處座標範圍
         const differences = [
-            { id: 1, top: '10%', left: '8%', width: '25%', height: '16%' },  // 左上角便條紙
-            { id: 2, top: '11%', left: '53%', width: '37%', height: '18%' }, // 右上角鏡子文字
-            { id: 3, top: '44%', left: '40%', width: '12%', height: '10%' }, // 熊大的嘴巴
-            { id: 4, top: '56%', left: '45%', width: '22%', height: '10%' }, // 莎莉的睫毛
-            { id: 5, top: '83%', left: '4%', width: '26%', height: '12%' },  // 左下角髮飾
-            { id: 6, top: '90%', left: '75%', width: '22%', height: '8%' }   // 右下角版權文字
+            { id: 1, top: '10%', left: '7%', width: '23%', height: '18%' },  // 左上角便條紙
+            { id: 2, top: '10%', left: '58%', width: '35%', height: '20%' }, // 右上角鏡子文字
+            { id: 3, top: '54%', left: '47%', width: '20%', height: '10%' }, // 莎莉的睫毛
+            { id: 4, top: '91%', left: '32%', width: '22%', height: '9%' }   // 底部桌上的粉撲/蝴蝶結
         ];
 
         let score = 0;
@@ -182,11 +180,12 @@
             score++;
             scoreElement.textContent = score;
 
+            // 將左右兩張圖對應的熱區都加上 'found' class，觸發紅圈顯示
             const spots = document.querySelectorAll(`.hotspot[data-id="${id}"]`);
             spots.forEach(spot => spot.classList.add('found'));
 
             if (score === totalDiffs) {
-                messageElement.textContent = '🎉 恭喜你！找出了所有不同的地方！ 🎉';
+                messageElement.textContent = '🎉 恭喜你！完美找出了所有 4 個不同之處！ 🎉';
                 messageElement.style.color = '#e74c3c';
             }
         }
